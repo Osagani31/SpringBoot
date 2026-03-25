@@ -1,3 +1,4 @@
-# Next_Crash_Course
+# SpringBoot
 
-Learning repo of next.js
+Learning repo of SpringBoot
+
