@@ -1,47 +1,73 @@
-import java.util.HashMap;
-import java.util.Map;
-
+import entity.Student;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.boot.Metadata;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Environment;
-import org.hibernate.mapping.MetadataSource;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
+
+import java.io.Serializable;
+import java.util.List;
 
 public class AppInitializer {
-     public static void main(String[] args) {
-          StandardServiceRegistryBuilder standardServiceRegistryBuilder =
-                   new StandardServiceRegistryBuilder();
-          Map<String, String> databaseConfiguration = new HashMap<>();
-          databaseConfiguration.put(Environment.URL, "jdbc:mysql://localhost:3306/asd_1?createDatabaseIfNotExist=true");
+    public static void main(String[] args) {
+        Student student = new Student(1, "Namal", 40);
+        //saveStudent(student);
+        //findStudent(1);
+        //findAllStudents();
+        //updateStudentName("Ahinsaka Mahinda Hora!",1);
+        deleteStudent(2);
+    }
 
-          databaseConfiguration.put(Environment.USER, "root");
-          databaseConfiguration.put(Environment.PASS, "1234");
-          databaseConfiguration.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
-          databaseConfiguration.put(Environment.DIALECT, "org.hibernate.dialect.MySQL57Dialect");
-          standardServiceRegistryBuilder.applySettings(databaseConfiguration);
+    private static void saveStudent(Student student) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // save[it returns a serializable object, saved object primary key]
+            // persist [void]
+            // saveOrUpdate
+            Transaction transaction = session.beginTransaction(); // save, update, delete
+            session.save(student);
+            transaction.commit();
+        }
+    }
+    private static void findStudent(long id){
+        try(Session session = HibernateUtil.getSessionFactory().openSession()){
+            Student student = session.find(Student.class,id);
+            if (student!=null){
+                System.out.println(student.toString());
+            }else{
+                System.out.println("Can\'t find data");
+            }
 
-          StandardServiceRegistry standardServiceRegistry = standardServiceRegistryBuilder.build();
-          MetadataSources metadataSources = new MetadataSources(standardServiceRegistry);
-          Metadata metaData= metadataSources.getMetadataBuilder().build();
+        }
+    }
+    private static void findAllStudents(){
+        try(Session session = HibernateUtil.getSessionFactory().openSession()){
+            Query query = session.createQuery("FROM Student"); // HQL (Hibernate Query Language)
+            List<Student> students = query.list();
+            System.out.println(students);
+        }
+    }
 
-          //=====
-          SessionFactory sessionFactory = metaData.getSessionFactoryBuilder().build();
-          Session session = null;
-          try {
-                session = sessionFactory.openSession();
-               Object result =
-                       session.createNativeQuery("SELECT NOW()").getSingleResult();
-               System.out.println(result);
-          }catch (Exception e) {
-               e.printStackTrace();
-          }
-          finally {
-               session.close();
-               sessionFactory.close();
-
-          }
-     }
+    private static void updateStudentName(String name, long id){
+        try(Session session = HibernateUtil.getSessionFactory().openSession()){
+            Student selectedStudent = session.find(Student.class,id);
+            if (selectedStudent!=null){
+                selectedStudent.setStudentName(name);
+                Transaction transaction = session.beginTransaction();
+                session.update(selectedStudent);
+                transaction.commit();
+            }else{
+                System.out.println("Can\'t find data");
+            }
+        }
+    }
+    private static void deleteStudent(long id){
+        try(Session session = HibernateUtil.getSessionFactory().openSession()){
+            Student selectedStudent = session.find(Student.class,id);
+            if (selectedStudent!=null){
+                Transaction transaction = session.beginTransaction();
+                session.delete(selectedStudent);
+                transaction.commit();
+            }else{
+                System.out.println("Can\'t find data");
+            }
+        }
+    }
 }
