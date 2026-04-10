@@ -75,7 +75,20 @@ This repository documents my hands-on learning journey in **Java backend develop
 * Basic validation concepts
 
 ---
+### 🔄 Day 9/10 – Spring MVC CRUD & Hibernate Integration
 
+Controller creation using `@Controller`
+Handling requests with `@RequestMapping`
+Returning views using JSP
+View Resolver configuration in XML
+Understanding `WEB-INF` folder usage
+Integrating Hibernate with Spring
+Configuring DataSource and SessionFactory
+Performing basic CRUD operations
+Connecting to MySQL database
+Running application on Apache Tomcat
+
+---
 ## 💻 Tech Stack
 
 * Java
